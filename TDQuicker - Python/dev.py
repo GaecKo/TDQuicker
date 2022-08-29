@@ -1,5 +1,8 @@
 ### Code créé par GaecKo, inspiré de Docstring. 
-from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QWidget, QApplication, QListWidget, QLineEdit, QCheckBox, QLabel
+from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QTextEdit, QVBoxLayout, QPushButton, QWidget, QApplication, QListWidget, QLineEdit, QCheckBox, QLabel
+from PySide6.QtGui import QIcon
+from PySide6.QtCore import *
+
 
 from functools import partial
 
@@ -18,10 +21,11 @@ class TDQuicker(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("TDQuicker")
+        self.setStyleSheet("""
+                background-color: rgb(200, 200, 200)""")
         
         self.__create_ui()
         
-
         self.ip_add.returnPressed.connect(self.add_task)
         self.btn_clearAll.pressed.connect(self.clear_all_tasks)
 
@@ -31,17 +35,28 @@ class TDQuicker(QWidget):
             return 
         self.ip_add.clear()
         GenHBox = QHBoxLayout()
-        LeftH = QVBoxLayout()
+        LeftH = QHBoxLayout()
         CheckButton = QCheckBox(lab_text)
+        
         RightH = QHBoxLayout()
-        DeleteButton = QPushButton("Del")
+        Icon = QIcon(".requirement/bin.png")
+        DeleteButton = QPushButton(icon=Icon)
+        DeleteButton.setMaximumWidth(25)
+        DeleteButton.setMaximumHeight(25)
+        DeleteButton.setStyleSheet("""
+                            QPushButton {
+                                margin-right: 0;
+                                border: 5;
+                                font-size: 16;
+                            }
+        """)
 
         task = self.Task(GenHBox, LeftH, CheckButton, RightH, DeleteButton)
         self.tasks[lab_text] = task
 
         RightH.addWidget(DeleteButton)
         LeftH.addWidget(CheckButton)
-
+        
         GenHBox.addLayout(LeftH)
         GenHBox.addLayout(RightH)
 
@@ -74,9 +89,14 @@ class TDQuicker(QWidget):
         self.tasks_layout = QVBoxLayout()
         self.resize(250, 500)
         self.main_layout.setSpacing(0)
+        #self.main_layout.setContentsMargins(0, 0, 0, 0)
         
         # items
         self.ip_add = QLineEdit(); self.ip_add.setPlaceholderText("Add Task")
+        self.ip_add.setStyleSheet("""
+            background-color: white;
+        """)
+        self.ip_add.setMinimumHeight(30)
         self.tasks = tasks
 
         self.btn_clearAll = QPushButton("Click to Clear All")
