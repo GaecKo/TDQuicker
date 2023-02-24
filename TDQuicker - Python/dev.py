@@ -1,5 +1,5 @@
 ### Code créé par GaecKo, inspiré de Docstring. 
-from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QTextEdit, QVBoxLayout, QPushButton, QWidget, QApplication, QListWidget, QLineEdit, QCheckBox, QLabel
+from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QTextEdit, QVBoxLayout, QPushButton, QWidget, QApplication, QListWidget, QLineEdit, QCheckBox, QLabel, QGroupBox
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import *
 
@@ -16,13 +16,14 @@ class TDQuicker(QWidget):
             self.CheckButton = CheckButton
             self.RightH = RightH
             self.DeleteButton = DeleteButton
+            self.done = False
             self.attributes = [self.GenHBox, self.LeftH, self.CheckButton, self.RightH, self.DeleteButton]
     
     def __init__(self):
         super().__init__()
         self.setWindowTitle("TDQuicker")
         self.setStyleSheet("""
-                background-color: rgb(200, 200, 200)""")
+                background-color: rgb(40, 40, 40)""")
         
         self.__create_ui()
         
@@ -31,44 +32,59 @@ class TDQuicker(QWidget):
 
     def add_task(self):
         lab_text = self.ip_add.text()
-        if lab_text in self.tasks:
+        if lab_text in self.tasks or lab_text == "":
             return 
         self.ip_add.clear()
-        GenHBox = QHBoxLayout()
-        LeftH = QHBoxLayout()
-        CheckButton = QCheckBox(lab_text)
         
-        RightH = QHBoxLayout()
-        Icon = QIcon(".requirement/bin.png")
-        DeleteButton = QPushButton(icon=Icon)
-        DeleteButton.setMaximumWidth(25)
-        DeleteButton.setMaximumHeight(25)
-        DeleteButton.setStyleSheet("""
-                            QPushButton {
-                                margin-right: 0;
-                                border: 5;
-                                font-size: 16;
-                            }
+        # Create the QGroupBox and set its style sheet
+        group_box = QGroupBox()
+        group_box.setStyleSheet("""
+            QGroupBox {
+                border: 2px solid gray;
+                border-radius: 10px;
+                margin-top: 10px;
+                font-weight: bold;
+            }
         """)
 
-        task = self.Task(GenHBox, LeftH, CheckButton, RightH, DeleteButton)
-        self.tasks[lab_text] = task
+        # Create the QCheckBox and QPushButton widgets
+        CheckButton = QCheckBox(lab_text)
+        DeleteButton = QPushButton(QIcon(".requirement/bin.png"), "")
 
-        RightH.addWidget(DeleteButton)
-        LeftH.addWidget(CheckButton)
-        
-        GenHBox.addLayout(LeftH)
-        GenHBox.addLayout(RightH)
+        # Add the widgets to the group box
+        vbox = QVBoxLayout()
+        vbox.addWidget(CheckButton)
+        hbox = QHBoxLayout()
+        hbox.addStretch()
+        hbox.addWidget(DeleteButton)
+        vbox.addLayout(hbox)
+        group_box.setLayout(vbox)
+
+
 
         DeleteButton.pressed.connect(partial(self.delete_task, CheckButton))
         CheckButton.pressed.connect(partial(self.done_task, CheckButton))
 
-        self.tasks_layout.addLayout(GenHBox)
+        self.tasks_layout.addWidget(group_box)
 
     def done_task(self, CheckButton):
         for CheckButton_text, task_elem in self.tasks.items():
             if CheckButton == task_elem.CheckButton:
-                print('Found task elem!')
+                if task_elem.done == False:
+                    task_elem.CheckButton.setStyleSheet("""
+                                        QCheckBox {
+                                            text-decoration: line-through;
+                                            color: green; 
+                                        }
+                                        """)
+                    task_elem.done = True
+                else:
+                    task_elem.CheckButton.setStyleSheet("""
+                                        QCheckBox {
+                                            text-decoration: None;
+                                        }
+                                        """)
+                    task_elem.done = False
 
     def delete_task(self, CheckButton):
         for CheckButton_text, task_elem in self.tasks.items():
@@ -95,6 +111,7 @@ class TDQuicker(QWidget):
         self.ip_add = QLineEdit(); self.ip_add.setPlaceholderText("Add Task")
         self.ip_add.setStyleSheet("""
             background-color: white;
+            bord
         """)
         self.ip_add.setMinimumHeight(30)
         self.tasks = tasks
