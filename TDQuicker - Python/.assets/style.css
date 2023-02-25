@@ -1,6 +1,6 @@
 /* Apply a dark background color to all widgets */
 QWidget {
-    background-color: #242424;
+    background-color: #292929;
 }
   
 /* Style for QLabel */
@@ -8,37 +8,54 @@ QLabel {
     color: #f2f2f2;
     font-size: 16px;
     text-decoration: underline;
+    padding-left: 5px;
 }
-  
+
+QLabel#taskText {
+    text-decoration: none;
+    font-size: 16px;
+    background-color: #394359;
+}
+
 /* Style for QCheckBox */
 QCheckBox {
     color: #f2f2f2;
-    background-color: #192e25;
+    max-height: min-content;
+    background-color: #394359;
     font-size: 16px;
     padding: 5px;
 }
   
 QCheckBox::indicator {
+    border: 20px solid red;
     width: 20px;
     height: 20px;
+}
+
+QCheckBox::indicator:checked {
+    border: 2px solid green; 
 }
 
 
 /* Style for QLineEdit */
 QLineEdit {
-    background-color: #383838;
-    border: 2px solid #555;
-    border-radius: 4px;
-    color: #f2f2f2;
+    background-color: #606060;
+    border: 3px solid #394359;
+    border-radius: 10px;
+    color: #394359;
     font-size: 16px;
     padding: 6px;
+}
+
+QLineEdit:focus { 
+    color: white;  /* Color when the text is not a placeholder text */
 }
   
 /* Style for QPushButton */
 QPushButton {
-    background-color: #192e25;
+    background-color: #394359;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     color: #f2f2f2;
     font-size: 16px;
     padding: 8px;
@@ -46,11 +63,45 @@ QPushButton {
   
 /* Style for QGroupBox */
 QGroupBox {
-    background-color: #192e25;
+    background-color: #394359;
     border: 2px solid #555;
     border-radius: 8px;
     font-size: 16px;
-    margin-top: 20px;
-    /* padding-top: 5px; */
+    margin-top: 7px; 
 }
+
   
+QScrollArea {
+    border: 0px;
+    margin: 10% 0;
+    margin-left: 20px;
+}
+
+QScrollBar:vertical {
+    border: 1px solid;
+    background: #292929;
+    width: 5px;
+    border-radius: 5px;
+    margin: 0px 0px 0px 0px;
+}
+
+QScrollBar::handle:vertical {
+    background: white;
+    min-height: 10px;
+    max-height: 50px;
+    border-radius: 10px;
+}
+
+QScrollBar::add-line:vertical {
+    background: #292929;
+    min-height: 10px;
+    max-height: 50px;
+    border-radius: 20px;
+}
+
+QScrollBar::sub-line:vertical {
+    background: #292929;
+    min-height: 10px;
+    max-height: 50px;
+    border-radius: 20px;
+}
