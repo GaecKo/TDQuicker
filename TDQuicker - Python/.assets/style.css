@@ -11,7 +11,9 @@ QLabel {
     padding-left: 5px;
 }
 
-QLabel#taskText {
+QTextEdit#taskText {
+    border: 0px;
+    color: white;
     text-decoration: none;
     font-size: 16px;
     background-color: #394359;
@@ -19,21 +21,14 @@ QLabel#taskText {
 
 /* Style for QCheckBox */
 QCheckBox {
-    color: #f2f2f2;
-    max-height: min-content;
-    background-color: #394359;
     font-size: 16px;
+    background-color: #394359;
     padding: 5px;
 }
   
 QCheckBox::indicator {
-    border: 20px solid red;
     width: 20px;
     height: 20px;
-}
-
-QCheckBox::indicator:checked {
-    border: 2px solid green; 
 }
 
 
@@ -74,34 +69,26 @@ QGroupBox {
 QScrollArea {
     border: 0px;
     margin: 10% 0;
-    margin-left: 20px;
 }
 
 QScrollBar:vertical {
-    border: 1px solid;
-    background: #292929;
-    width: 5px;
-    border-radius: 5px;
+    background-color: #292929;
+    width: 7px;
     margin: 0px 0px 0px 0px;
 }
 
 QScrollBar::handle:vertical {
-    background: white;
-    min-height: 10px;
-    max-height: 50px;
-    border-radius: 10px;
+    background-color: #ffffff;
+    border-radius: 5px;
 }
 
-QScrollBar::add-line:vertical {
-    background: #292929;
-    min-height: 10px;
-    max-height: 50px;
-    border-radius: 20px;
-}
-
+QScrollBar::add-line:vertical,
 QScrollBar::sub-line:vertical {
-    background: #292929;
-    min-height: 10px;
-    max-height: 50px;
-    border-radius: 20px;
+    height: 0px;
+    background: none;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
 }

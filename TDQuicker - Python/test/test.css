@@ -1,0 +1,55 @@
+/* Apply a dark background color to all widgets */
+QWidget {
+    background-color: #242424;
+}
+
+/* Style for QLabel */
+QLabel {
+    color: #f2f2f2;
+    font-size: 16px;
+    text-decoration: underline;
+}
+
+/* Style for QCheckBox */
+QCheckBox {
+    color: #f2f2f2;
+    background-color: #192e25;
+    font-size: 16px;
+    padding: 5px;
+}
+
+QCheckBox::indicator {
+    width: 20px;
+    height: 20px;
+}
+
+
+/* Style for QLineEdit */
+QLineEdit {
+    background-color: #383838;
+    border: 2px solid #555;
+    border-radius: 4px;
+    color: #f2f2f2;
+    font-size: 16px;
+    padding: 6px;
+}
+
+/* Style for QPushButton */
+QPushButton {
+    background-color: #192e25;
+    border: none;
+    border-radius: 4px;
+    color: #f2f2f2;
+    font-size: 16px;
+    padding: 8px;
+}
+
+/* Style for QGroupBox */
+QGroupBox {
+    background-color: #192e25;
+    border: 2px solid #555;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-top: 20px;
+    /* padding-top: 5px; */
+}

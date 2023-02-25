@@ -1,11 +1,12 @@
 # Code créé par GaecKo
 
-from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QTextEdit, QVBoxLayout, QPushButton, QWidget, QApplication, QListWidget, QLineEdit, QSplitter, QCheckBox, QLabel, QGroupBox, QFrame, QMessageBox, QStyle, QScrollArea
-from PySide6.QtGui import QIcon, QFontMetrics
+from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QTextEdit, QVBoxLayout, QPushButton, QWidget, QApplication, QListWidget, QLineEdit, QSplitter, QCheckBox, QLabel, QGroupBox, QFrame, QMessageBox, QStyle, QScrollArea 
+from PySide6.QtGui import QIcon, QTextOption
 from PySide6.QtCore import Qt
 import json
 from datetime import datetime, date
 from data.data import * 
+import time
 
 
 from functools import partial
@@ -26,14 +27,24 @@ class TDQuicker(QWidget):
             self.CheckButton.setMaximumSize(25, 25)
 
             # Text of the task 
-            self.lb_text = QLabel(text=self.task_text)
-            self.lb_text.setWordWrap(True)
-            self.lb_text.setObjectName("taskText")
+            self.le_text = QTextEdit(self.task_text)
+            self.le_text.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
+            self.le_text.setReadOnly(True)
+              # set a fixed height
+            self.le_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)  # hide the vertical scrollbar
+            recommanded_height = (len(self.task_text) / 17) * 17
+            self.le_text.setMinimumHeight(recommanded_height)
+            
+            self.le_text.setObjectName("taskText")
 
             # Icon and button to delete task
-            self.icon = QIcon(".assets/bin.png")
-            self.DeleteButton = QPushButton(self.icon, "")
-            self.DeleteButton.setMaximumSize(25, 25)
+            self.bin = QIcon(".assets/bin.png")
+            self.DeleteButton = QPushButton(self.bin, "")
+            self.DeleteButton.setMaximumSize(20, 30)
+            self.cus = QIcon(".assets/edit.png")
+            self.EditButton = QPushButton(self.cus, "")
+            self.EditButton.setMaximumSize(20, 30)
+
 
             # Create the main layout containing the elements to place in GroupBox
             self.GenHBox = QHBoxLayout()
@@ -41,10 +52,11 @@ class TDQuicker(QWidget):
             # Sub layout for Check button and text
             self.LeftH = QHBoxLayout()
             self.LeftH.addWidget(self.CheckButton)
-            self.LeftH.addWidget(self.lb_text)
+            self.LeftH.addWidget(self.le_text)
             
             # Sub layout for delete button
             self.RightH = QHBoxLayout()
+            self.RightH.addWidget(self.EditButton)
             self.RightH.addWidget(self.DeleteButton)
 
             # Add these layouts to main layout
@@ -53,12 +65,8 @@ class TDQuicker(QWidget):
 
             # Set layout of group Box
             self.GroupBox.setLayout(self.GenHBox)
-
-
-            # size_pol = QSizePolicy()
-            # size_pol.setVerticalPolicy(QSizePolicy.Fixed)
-            # size_pol.setHorizontalPolicy(QSizePolicy.Maximum)
-            # self.GroupBox.setSizePolicy(size_pol)
+            
+            self.GroupBox.setMaximumHeight(recommanded_height + 50)
 
             # self.GroupBox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
             self.done = False
@@ -70,7 +78,7 @@ class TDQuicker(QWidget):
             else:
                 self.date = date
             
-            self.attributes = [self.GroupBox, self.GenHBox, self.LeftH, self.CheckButton, self.lb_text, self.RightH, self.DeleteButton]
+            self.attributes = [self.GroupBox, self.GenHBox, self.LeftH, self.CheckButton, self.le_text, self.RightH, self.DeleteButton]
 
         def manage_text_size(self):
             words = self.task_text.split(" ")
@@ -78,8 +86,6 @@ class TDQuicker(QWidget):
                 word = words[i]
                 
                 
-        
-
     def __init__(self):
         super().__init__()
         self.setWindowTitle("TDQuicker")
@@ -226,14 +232,18 @@ class TDQuicker(QWidget):
 
     def task_checked(self, task_text, from_save=False):
         checked_task = self.tasks[task_text] # get instance that was checked
+        if not from_save:
+            checked_task.CheckButton.setChecked(True)
+            time.sleep(0.2) # better user experience
+        
         if checked_task.done == False:
             checked_task.done = True
             checked_task.CheckButton.setStyleSheet("color:green;") # apply style 
-            checked_task.lb_text.setStyleSheet("text-decoration: line-through;")
+            checked_task.le_text.setStyleSheet("text-decoration: line-through;")
         else:
             checked_task.done = False
             checked_task.CheckButton.setStyleSheet("color: white;") # apply style
-            checked_task.lb_text.setStyleSheet("text-decoration: none;")
+            checked_task.le_text.setStyleSheet("text-decoration: none;")
         self.move_task(task_text, from_save)
     
     def task_delete(self, task_text: str):
