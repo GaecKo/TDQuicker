@@ -1,10 +1,12 @@
-# Code créé par GaecKo
+# Author: Arthur De Neyer (GaecKo)
+# Date: 26/02/2023
+# GitHub: https://github.com/GaecKo/TDQuicker 
 
-from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QTextEdit, QVBoxLayout, QPushButton, QWidget, QApplication, QListWidget, QLineEdit, QSplitter, QCheckBox, QLabel, QGroupBox, QFrame, QMessageBox, QStyle, QScrollArea 
+from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QTextEdit, QVBoxLayout, QPushButton, QWidget, QApplication, QLineEdit, QCheckBox, QLabel, QGroupBox, QMessageBox, QScrollArea
 from PySide6.QtGui import QIcon, QTextOption
 from PySide6.QtCore import Qt
-import json
-from datetime import datetime, date
+
+from datetime import datetime
 from data.data import * 
 import time
 
@@ -53,6 +55,8 @@ class TDQuicker(QWidget):
             self.LeftH = QHBoxLayout()
             self.LeftH.addWidget(self.CheckButton)
             self.LeftH.addWidget(self.le_text)
+            
+            self.LeftH.setAlignment(Qt.AlignVCenter)
             
             # Sub layout for delete button
             self.RightH = QHBoxLayout()
