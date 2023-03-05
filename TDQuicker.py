@@ -29,15 +29,14 @@ class TDQuicker(QWidget):
             self.CheckButton.setMaximumSize(25, 25)
 
             # Text of the task 
-            self.le_text = QTextEdit(self.task_text)
-            self.le_text.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
-            self.le_text.setReadOnly(True)
+            self.te_text = QTextEdit(self.task_text)
+            self.te_text.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
+            self.te_text.setReadOnly(True)
               # set a fixed height
-            self.le_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)  # hide the vertical scrollbar
-            recommanded_height = (len(self.task_text) / 17) * 17
-            self.le_text.setMinimumHeight(recommanded_height)
+            self.te_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)  # hide the vertical scrollbar
             
-            self.le_text.setObjectName("taskText")
+            
+            self.te_text.setObjectName("taskText")
 
             # Icon and button to delete task
             self.bin = QIcon(".assets/bin.png")
@@ -54,7 +53,7 @@ class TDQuicker(QWidget):
             # Sub layout for Check button and text
             self.LeftH = QHBoxLayout()
             self.LeftH.addWidget(self.CheckButton)
-            self.LeftH.addWidget(self.le_text)
+            self.LeftH.addWidget(self.te_text)
             
             self.LeftH.setAlignment(Qt.AlignVCenter)
             
@@ -70,8 +69,6 @@ class TDQuicker(QWidget):
             # Set layout of group Box
             self.GroupBox.setLayout(self.GenHBox)
             
-            self.GroupBox.setMaximumHeight(recommanded_height + 50)
-
             # self.GroupBox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
             self.done = False
 
@@ -82,13 +79,14 @@ class TDQuicker(QWidget):
             else:
                 self.date = date
             
-            self.attributes = [self.GroupBox, self.GenHBox, self.LeftH, self.CheckButton, self.le_text, self.RightH, self.DeleteButton]
+            self.attributes = [self.GroupBox, self.GenHBox, self.LeftH, self.CheckButton, self.te_text, self.RightH, self.DeleteButton]
 
-        def manage_text_size(self):
-            words = self.task_text.split(" ")
-            for i in range(len(words)):
-                word = words[i]
-                
+            self.refresh_size()
+
+        def refresh_size(self):
+            recommanded_height = (len(self.task_text) / 17) * 17
+            self.te_text.setMinimumHeight(recommanded_height)
+            self.GroupBox.setMaximumHeight(recommanded_height + 50)  
                 
     def __init__(self):
         super().__init__()
@@ -134,6 +132,8 @@ class TDQuicker(QWidget):
         size_policy.setVerticalPolicy(QSizePolicy.Fixed)
 
         self.lb_tasks.setSizePolicy(size_policy)
+        
+        self.lb_doneTasks.setSizePolicy(size_policy)
 
 
     def create_layouts(self):
@@ -159,7 +159,9 @@ class TDQuicker(QWidget):
         self.resize(350, 500)
         self.setMaximumSize(500, 800)
         self.setMinimumSize(300, 300)
-        self.main_layout.setSpacing(0)
+        # self.main_layout.setSpacing(0)
+
+        self.doneTasks_layout.setAlignment(Qt.AlignTop)
 
     def add_widgets_to_layouts(self):
         # main layout disposition: 
@@ -173,6 +175,9 @@ class TDQuicker(QWidget):
 
         # Add the two layouts to the scrollable layout
         self.scroll_layout.addLayout(self.tasks_layout, 0)
+
+        self.scroll_layout.addSpacing(15)
+
         self.scroll_layout.addLayout(self.doneTasks_layout)
 
         
@@ -191,6 +196,7 @@ class TDQuicker(QWidget):
 
         # Add tasks label
         self.tasks_layout.addWidget(self.lb_tasks)
+
         # Add done tasks label
         self.doneTasks_layout.addWidget(self.lb_doneTasks) 
 
@@ -209,7 +215,7 @@ class TDQuicker(QWidget):
 
     def __init_tasks__(self):
         self.tasks = self.load_tasks()
-    
+
     def add_task(self):
         # get task_text
         task_text = self.ip_add.text()
@@ -222,10 +228,14 @@ class TDQuicker(QWidget):
         # Create instance of task and its widgets / layouts
         task = self.Task(task_text)
         
-        # Setup connections 
-        task.CheckButton.pressed.connect(partial(self.task_checked, task_text))
+        # Setup connections of the task 
+        task.CheckButton.pressed.connect(partial(self.task_checked, task.task_text))
 
-        task.DeleteButton.pressed.connect(partial(self.task_delete, task_text))
+        task.DeleteButton.pressed.connect(partial(self.task_delete, task.task_text))
+
+        task.EditButton.pressed.connect(partial(self.switch_edit_mode, task.task_text))
+
+        task.te_text.keyPressEvent = lambda event: self.update_task_text(task.task_text) if event.key() == Qt.Key_Return else QTextEdit.keyPressEvent(task.te_text, event) 
 
         # Add task to tasks_layout
         self.tasks_layout.addWidget(task.GroupBox)
@@ -233,6 +243,48 @@ class TDQuicker(QWidget):
         # Keep task in memory
         self.tasks[task_text] = task # within ram
         save_task(task_text, task.date)  # within storage 
+
+        
+    def switch_edit_mode(self, task_text):
+        task = self.tasks[task_text]
+
+        if task.te_text.isReadOnly(): # if it has to be editable
+            task.te_text.setReadOnly(False)
+            task.te_text.setStyleSheet("border: 2px white; border-style: none none solid none; ")
+            task.EditButton.setStyleSheet("border: 2px white; border-style: none none solid none; ")
+        else:
+            task.te_text.setReadOnly(True) # if it has to be only readable
+            task.te_text.setStyleSheet("border: none; border-style: none; ")
+            task.EditButton.setStyleSheet("border: none; border-style: none; ")
+    
+    def update_task_text(self, old_task_text):
+
+        new_text = self.tasks[old_task_text].te_text.toPlainText() # get the new text 
+        self.tasks[new_text] = self.tasks.pop(old_task_text)
+
+        task = self.tasks[new_text]
+        task.task_text = new_text # refresh the task attributes 
+        task.refresh_size()
+
+        self.refresh_saved_task(old_task_text, new_text)
+        self.refresh_task_connections(new_text)
+        self.switch_edit_mode(new_text)
+
+    def refresh_task_connections(self, task_text):
+        task = self.tasks[task_text]
+        
+        # Refresh connections if task name was changed
+        task.CheckButton.pressed.disconnect()
+        task.CheckButton.pressed.connect(partial(self.task_checked, task_text))
+
+        task.DeleteButton.pressed.disconnect()
+        task.DeleteButton.pressed.connect(partial(self.task_delete, task_text))
+
+        task.EditButton.pressed.disconnect()
+        task.EditButton.pressed.connect(partial(self.switch_edit_mode, task_text))
+
+
+        task.te_text.keyPressEvent = lambda event: self.update_task_text(task_text) if event.key() == Qt.Key_Return else QTextEdit.keyPressEvent(task.te_text, event) 
 
     def task_checked(self, task_text, from_save=False):
         checked_task = self.tasks[task_text] # get instance that was checked
@@ -243,14 +295,15 @@ class TDQuicker(QWidget):
         if checked_task.done == False:
             checked_task.done = True
             checked_task.CheckButton.setStyleSheet("color:green;") # apply style 
-            checked_task.le_text.setStyleSheet("text-decoration: line-through;")
+            checked_task.te_text.setStyleSheet("text-decoration: line-through;")
         else:
             checked_task.done = False
             checked_task.CheckButton.setStyleSheet("color: white;") # apply style
-            checked_task.le_text.setStyleSheet("text-decoration: none;")
+            checked_task.te_text.setStyleSheet("text-decoration: none;")
         self.move_task(task_text, from_save)
     
     def task_delete(self, task_text: str):
+
         to_delete_task = self.tasks[task_text] # get instance of Task
         if to_delete_task.done: # remove group widget of the good layout
             self.doneTasks_layout.removeWidget(to_delete_task.GroupBox)
@@ -307,7 +360,12 @@ class TDQuicker(QWidget):
             self.tasks_layout.addWidget(GroupBox) # add to new state layout
             self.tasks[task_text].CheckButton.setChecked(False) # set check state of button 
 
-    # ========= Tasks Loading =========
+    # ========= Tasks Loading / Saving =========
+
+    def refresh_saved_task(self, old_text, new_text):
+        delete_task(old_text, self.tasks[new_text].done)
+        save_task(new_text, self.tasks[new_text].date)
+
 
     def load_tasks(self):
         loaded = load_content() # get saved tasks
@@ -325,18 +383,17 @@ class TDQuicker(QWidget):
                 # Set connections 
                 task.CheckButton.pressed.connect(partial(self.task_checked, task_name))
                 task.DeleteButton.pressed.connect(partial(self.task_delete, task_name))
+                task.EditButton.pressed.connect(partial(self.switch_edit_mode, task_name))
+                task.te_text.keyPressEvent = lambda event: self.update_task_text(task_name) if event.key() == Qt.Key_Return else QTextEdit.keyPressEvent(task.te_text, event) 
 
-                
 
         return self.tasks 
-
-                
-        
-
 
 
 if __name__ == "__main__":
     app = QApplication()
+    app_icon = QIcon(".assets/WIcon.svg")
+    app.setWindowIcon(app_icon)
     with open(".assets/style.css", 'r') as file:
         app.setStyleSheet(file.read())
 

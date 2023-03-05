@@ -16,7 +16,7 @@
 ## TDQuicher
 TDQuicker is a simple To Do list made with `PySide6`, `Qt`. 
 <p align="center">
-    <img src=".git_files/TDQuicker.png" width=200>
+    <img src=".git_files/TDQuicker.png" width=300>
 </p>
 
 ****

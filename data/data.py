@@ -24,7 +24,7 @@ def delete_task(task_text: str, state: bool):
     write_content(data)
 
 def move_saved_task(task_text: str, new_state: bool):
-    # new state: true = is has been done; false = it has to be done
+    # new state: true = it has been done; false = it has to be done
     if new_state:
         bef_state, new_state = "todo", "done"
     else:

@@ -1,12 +1,4 @@
 {
-    "todo": {
-        "C learning: Threads": "26/02/2023 12:30:10",
-        "Java Abstract Classes": "26/02/2023 12:34:38",
-        "GUI of MDPSaver": "26/02/2023 12:34:48",
-        "Bugs fix of TDQuicker": "26/02/2023 12:35:46",
-        "TDQuicker Doc": "26/02/2023 12:37:09"
-    },
-    "done": {
-        "TDQuicker GUI": "26/02/2023 12:35:03"
-    }
+    "todo": {},
+    "done": {}
 }
