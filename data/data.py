@@ -9,9 +9,12 @@ def load_content() -> dict:
     with open(FILE, 'r') as f:
         return json.load(f)
 
-def save_task(task_text: str, date: str):
+def save_task(task_text: str, date: str, done: bool = False):
     data = load_content()
-    data["todo"][task_text] = date
+    if not done:
+        data["todo"][task_text] = date
+    else:
+        data["done"][task_text] = date
     write_content(data)
 
 def delete_task(task_text: str, state: bool):

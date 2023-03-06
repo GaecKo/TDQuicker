@@ -5,4 +5,5 @@ Future updates:
 * [ ] Folders of to do
 * [ ] If no to do, displays a little message 
 * [ ] Progression bar 
+* [ ] Better adaptative height for QGroupBox 
 * ... 

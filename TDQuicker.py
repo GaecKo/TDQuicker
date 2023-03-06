@@ -1,64 +1,103 @@
 # Author: Arthur De Neyer (GaecKo)
-# Date: 26/02/2023
+# Date: 06/03/2023
 # GitHub: https://github.com/GaecKo/TDQuicker 
 
 from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QTextEdit, QVBoxLayout, QPushButton, QWidget, QApplication, QLineEdit, QCheckBox, QLabel, QGroupBox, QMessageBox, QScrollArea
 from PySide6.QtGui import QIcon, QTextOption
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSize
 
 from datetime import datetime
 from data.data import * 
 import time
+import re
 
 
 from functools import partial
 
 class TDQuicker(QWidget):
-    class Task:
-        # Used to 
-        def __init__(self, task_text, date: str =None):
-            self.task_text = task_text
-            self.create_task(date)
 
-        def create_task(self, date: str =None): 
+    class Task: # class containing the task itself
+        def __init__(self, task_text, date: str =None):
+            # task text and initial status
+            self.task_text = task_text
+            self.done = False
+
+            # Date of task management:
+            if date == None:
+                now = datetime.now()
+                self.date = now.strftime("%d/%m/%Y %H:%M:%S")
+            else:
+                self.date = date
+
+            # creates task components
+            self.create_composers()
+            self.create_widgets()
+            self.modify_widgets()
+            self.add_widgets_to_composers()
+            self.refresh_size()
+
+            # list for easier deletion
+            self.attributes = [self.GroupBox, self.GenHBox, self.LeftH, self.CheckButton, self.te_text, self.RightH, self.DeleteButton]
+            
+        def create_composers(self):
             # Create the QGroupBox 
             self.GroupBox = QGroupBox()
-
-            # Create the QCheckBox and QPushButton widgets
-            self.CheckButton = QCheckBox()
-            self.CheckButton.setMaximumSize(25, 25)
-
-            # Text of the task 
-            self.te_text = QTextEdit(self.task_text)
-            self.te_text.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
-            self.te_text.setReadOnly(True)
-              # set a fixed height
-            self.te_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)  # hide the vertical scrollbar
-            
-            
-            self.te_text.setObjectName("taskText")
-
-            # Icon and button to delete task
-            self.bin = QIcon(".assets/bin.png")
-            self.DeleteButton = QPushButton(self.bin, "")
-            self.DeleteButton.setMaximumSize(20, 30)
-            self.cus = QIcon(".assets/edit.png")
-            self.EditButton = QPushButton(self.cus, "")
-            self.EditButton.setMaximumSize(20, 30)
-
 
             # Create the main layout containing the elements to place in GroupBox
             self.GenHBox = QHBoxLayout()
 
-            # Sub layout for Check button and text
+            # sub layout for repartition
             self.LeftH = QHBoxLayout()
+            self.RightH = QHBoxLayout()
+
+        def create_widgets(self):
+            # Create the QCheckBox widgets
+            self.CheckButton = QCheckBox()
+
+            # Text of the task 
+            self.te_text = QTextEdit()
+            
+
+            self.cus = QIcon(".assets/edit.png")
+            self.EditButton = QPushButton(self.cus, "")
+
+            # Icon and button to delete task
+            self.bin = QIcon(".assets/bin.png")
+            self.DeleteButton = QPushButton(self.bin, "")
+        
+        
+
+        def linkify(self, text):
+            # Regular expression pattern for matching URLs
+            url_pattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+
+            # Replace URLs with HTML links
+            return url_pattern.sub(lambda match: '<a href="{}">{}</a>'.format(match.group(0), match.group(0)), text)
+
+
+        def modify_widgets(self):
+            # Cross task size
+            self.CheckButton.setMaximumSize(25, 25)
+
+            # te_text options: 
+            # self.te_text.setPlainText(self.task_text)
+            self.te_text.setHtml(self.linkify(self.task_text))
+            self.te_text.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
+            self.te_text.setReadOnly(True)
+            self.te_text.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)  # hide the vertical scrollbar
+            self.te_text.setObjectName("taskText")
+
+
+            # Buttons size
+            self.DeleteButton.setMaximumSize(20, 30)
+            self.EditButton.setMaximumSize(20, 30)
+        
+        def add_widgets_to_composers(self):
+            # Sub left layout for Check button and text
             self.LeftH.addWidget(self.CheckButton)
             self.LeftH.addWidget(self.te_text)
-            
-            self.LeftH.setAlignment(Qt.AlignVCenter)
-            
-            # Sub layout for delete button
-            self.RightH = QHBoxLayout()
+
+            # Sub Right layout for Options button (del and mod)
             self.RightH.addWidget(self.EditButton)
             self.RightH.addWidget(self.DeleteButton)
 
@@ -68,35 +107,23 @@ class TDQuicker(QWidget):
 
             # Set layout of group Box
             self.GroupBox.setLayout(self.GenHBox)
-            
-            # self.GroupBox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
-            self.done = False
-
-            # Date of task management:
-            if date == None:
-                now = datetime.now()
-                self.date = now.strftime("%d/%m/%Y %H:%M:%S")
-            else:
-                self.date = date
-            
-            self.attributes = [self.GroupBox, self.GenHBox, self.LeftH, self.CheckButton, self.te_text, self.RightH, self.DeleteButton]
-
-            self.refresh_size()
 
         def refresh_size(self):
-            recommanded_height = (len(self.task_text) / 17) * 17
+            # refresh size to make the groupbox height correspond to the content heigh
+
+            recommanded_height = len(self.task_text) 
             self.te_text.setMinimumHeight(recommanded_height)
-            self.GroupBox.setMaximumHeight(recommanded_height + 50)  
+            self.GroupBox.setMaximumHeight(recommanded_height + 50) 
                 
     def __init__(self):
         super().__init__()
         self.setWindowTitle("TDQuicker")
 
-        self.setup_ui()
+        self.__init_ui__()
         self.__init_tasks__()
 
     # ========= Initial UI =========
-    def setup_ui(self): 
+    def __init_ui__(self): 
         self.create_widgets()
         self.modify_widgets()
         self.create_layouts()
@@ -125,7 +152,7 @@ class TDQuicker(QWidget):
     def modify_widgets(self):
         # Add Task Bar:
         self.ip_add.setPlaceholderText("Add Task")
-        self.ip_add.setMinimumHeight(30)
+        self.ip_add.setMinimumHeight(50)
 
         # Rule for To DO tasks Label:
         size_policy = QSizePolicy()
@@ -134,7 +161,6 @@ class TDQuicker(QWidget):
         self.lb_tasks.setSizePolicy(size_policy)
         
         self.lb_doneTasks.setSizePolicy(size_policy)
-
 
     def create_layouts(self):
         # Main layout: 
@@ -154,7 +180,6 @@ class TDQuicker(QWidget):
         self.scroll_layout = QVBoxLayout()
         self.scroll_area = QScrollArea(widgetResizable=True) 
         
-
     def modify_layouts(self):
         self.resize(350, 500)
         self.setMaximumSize(500, 800)
@@ -220,7 +245,7 @@ class TDQuicker(QWidget):
         # get task_text
         task_text = self.ip_add.text()
 
-        if task_text in self.tasks or task_text == "": # case of not adding the task
+        if task_text in self.tasks or task_text == "" or task_text == len(task_text) * " ": # case of not adding the task
             return
         else:
             self.ip_add.clear()
@@ -243,19 +268,31 @@ class TDQuicker(QWidget):
         # Keep task in memory
         self.tasks[task_text] = task # within ram
         save_task(task_text, task.date)  # within storage 
-
-        
+   
     def switch_edit_mode(self, task_text):
         task = self.tasks[task_text]
 
+        
         if task.te_text.isReadOnly(): # if it has to be editable
             task.te_text.setReadOnly(False)
-            task.te_text.setStyleSheet("border: 2px white; border-style: none none solid none; ")
+            if not task.done:
+                task.te_text.setStyleSheet("border: 2px white; border-style: none none solid none; ")
+            else:
+                task.te_text.setStyleSheet("border: 2px white; border-style: none none solid none; text-decoration: line-through;")
+
             task.EditButton.setStyleSheet("border: 2px white; border-style: none none solid none; ")
+            task.EditButton.setIcon(QIcon(".assets/back.svg"))
         else:
             task.te_text.setReadOnly(True) # if it has to be only readable
-            task.te_text.setStyleSheet("border: none; border-style: none; ")
-            task.EditButton.setStyleSheet("border: none; border-style: none; ")
+            task.EditButton.setStyleSheet("border: none; border-style: none;")
+            task.EditButton.setIcon(QIcon(".assets/edit.png"))
+            if task.te_text.toPlainText() != task_text:
+                task.te_text.setText(task_text)
+
+            if task.done:
+                task.te_text.setStyleSheet("border: none; border-style: none; text-decoration: line-through;")
+            else:
+                task.te_text.setStyleSheet("border: none; border-style: none;")
     
     def update_task_text(self, old_task_text):
 
@@ -364,7 +401,8 @@ class TDQuicker(QWidget):
 
     def refresh_saved_task(self, old_text, new_text):
         delete_task(old_text, self.tasks[new_text].done)
-        save_task(new_text, self.tasks[new_text].date)
+        save_task(new_text, self.tasks[new_text].date, self.tasks[new_text].done)
+        
 
 
     def load_tasks(self):

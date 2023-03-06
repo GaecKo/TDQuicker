@@ -1,16 +1,31 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QTextEdit
+import sys
+from PyQt5.Qt import QDesktopServices, QUrl, QApplication, QColor, Qt
+from PyQt5.QtWidgets import QTextEdit
 
-def on_return_pressed():
-    print("Return key pressed")
 
-app = QApplication([])
-te_text = QTextEdit()
-te_text.setReadOnly(False)
-te_text.setStyleSheet("""border: 2px solid black;""")
+class MyWidget(QTextEdit):
 
-# Detect return key press event
-te_text.keyPressEvent = lambda event: on_return_pressed() if event.key() == Qt.Key_Return else QTextEdit.keyPressEvent(te_text, event)
+    def mousePressEvent(self, e):
+        self.anchor = self.anchorAt(e.pos())
+        if self.anchor:
+            QApplication.setOverrideCursor(Qt.PointingHandCursor)
 
-te_text.show()
-app.exec()
+    def mouseReleaseEvent(self, e):
+        if self.anchor:
+            QDesktopServices.openUrl(QUrl(self.anchor))
+            QApplication.setOverrideCursor(Qt.ArrowCursor)
+            self.anchor = None
+
+
+app = QApplication(sys.argv)
+editor = MyWidget()
+cursor = editor.textCursor()
+fmt = cursor.charFormat()
+fmt.setForeground(QColor('blue'))
+address = 'http://example.com'
+fmt.setAnchor(True)
+fmt.setAnchorHref(address)
+fmt.setToolTip(address)
+cursor.insertText("Hello world again", fmt)
+editor.show()
+app.exec_()
