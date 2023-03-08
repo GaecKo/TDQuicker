@@ -11,6 +11,14 @@ QLabel {
     padding-left: 5px;
 }
 
+QToolTip {
+    background-color: #404040; 
+    color: white;
+    font-size: 14px; 
+    border: 1px solid black;
+    border-radius: 8px;
+}
+
 QTextEdit#taskText {
     border: 0px;
     color: white;
@@ -49,13 +57,9 @@ QLineEdit {
     background-color: #606060;
     border: 3px solid #394359;
     border-radius: 10px;
-    color: #394359;
+    color: rgb(186, 186, 186);
     font-size: 16px;
     padding: 6px;
-}
-
-QLineEdit:focus { 
-    color: white;  /* Color when the text is not a placeholder text */
 }
   
 /* Style for QPushButton */

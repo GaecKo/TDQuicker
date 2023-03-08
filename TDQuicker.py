@@ -4,15 +4,16 @@
 
 from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QTextEdit, QVBoxLayout, QPushButton, QWidget, QApplication, QLineEdit, QCheckBox, QLabel, QGroupBox, QMessageBox, QScrollArea, QProgressBar
 from PySide6.QtGui import QIcon, QTextOption
-from PySide6.QtCore import Qt, QSize, QPropertyAnimation
+from PySide6.QtCore import Qt, QPropertyAnimation
 
 from datetime import datetime
 from data.data import * 
 import time
 import re
 
-
 from functools import partial
+
+# sticky mode ! 
 
 class ProgressBar(QProgressBar):
     def __init__(self):
@@ -76,7 +77,6 @@ class TDQuicker(QWidget):
             # Text of the task 
             self.te_text = QTextEdit()
             
-
             self.cus = QIcon(".assets/edit.png")
             self.EditButton = QPushButton(self.cus, "")
 
@@ -84,8 +84,6 @@ class TDQuicker(QWidget):
             self.bin = QIcon(".assets/bin.png")
             self.DeleteButton = QPushButton(self.bin, "")
         
-        
-
         def linkify(self, text):
             # Regular expression pattern for matching URLs
             url_pattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
@@ -153,10 +151,11 @@ class TDQuicker(QWidget):
     def create_widgets(self):
         # Add Task Bar:
         self.ip_add = QLineEdit()
+        # Add Sticky button
+        self.btn_sticky = QPushButton(icon=QIcon(".assets/stick.png"))
 
         # main widget for scrollable uses
         self.main_widget = QWidget()
-
 
         # Add Clear All button: 
         self.btn_clearDone = QPushButton(icon=QIcon(".assets/bin.png"), text="Done") 
@@ -172,11 +171,16 @@ class TDQuicker(QWidget):
         self.progress_bar = ProgressBar()
 
     def modify_widgets(self):
-        # Add Task Bar:
+        # Task Bar:
         self.ip_add.setPlaceholderText("Add Task")
         self.ip_add.setMinimumHeight(40)
 
-        # Rule for To DO tasks Label:
+        # sticky button 
+        self.btn_sticky.setMaximumSize(40, 40)
+        self.btn_sticky.setToolTip("Enable / Disable Sticky mode")
+
+
+        # Rule for To Do tasks Label:
         size_policy = QSizePolicy()
         size_policy.setVerticalPolicy(QSizePolicy.Fixed)
 
@@ -191,6 +195,9 @@ class TDQuicker(QWidget):
     def create_layouts(self):
         # Main layout: 
         self.main_layout = QVBoxLayout(self)
+
+        # Top layout for input and sticky button
+        self.top_layout = QHBoxLayout()
 
         # Create the scrollable widget and layout
         self.scroll_widget = QWidget()
@@ -211,16 +218,17 @@ class TDQuicker(QWidget):
 
     def modify_layouts(self):
         self.resize(400, 550)
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.setMaximumSize(500, 800)
-        self.setMinimumSize(300, 300)
-        # self.main_layout.setSpacing(0)
+        self.setMinimumSize(350, 350)
 
         self.doneTasks_layout.setAlignment(Qt.AlignTop)
 
     def add_widgets_to_layouts(self):
         # main layout disposition: 
-        self.main_layout.addWidget(self.ip_add) 
+        self.top_layout.addWidget(self.ip_add)
+        self.top_layout.addWidget(self.btn_sticky)
+
+        self.main_layout.addLayout(self.top_layout) 
 
         # ---- Scrollable Widget: 
 
@@ -270,7 +278,19 @@ class TDQuicker(QWidget):
         self.ip_add.returnPressed.connect(self.add_task)
         self.btn_clearDone.pressed.connect(partial(self.clear_tasks, True))
         self.btn_clearNotDone.pressed.connect(partial(self.clear_tasks, False))
+        self.btn_sticky.pressed.connect(self.switch_sticky)
     
+    def switch_sticky(self):
+        flags = self.windowFlags()
+        if flags & Qt.WindowStaysOnTopHint:
+            self.setWindowFlags(flags & ~Qt.WindowStaysOnTopHint)
+            self.btn_sticky.setIcon(QIcon(".assets/stick.png"))
+        else:
+            self.setWindowFlags(flags | Qt.WindowStaysOnTopHint)
+            self.btn_sticky.setIcon(QIcon(".assets/sticked.png"))
+        
+        self.show()
+
     # ========= Tasks Addition =========
 
     def __init_tasks__(self):
@@ -332,8 +352,9 @@ class TDQuicker(QWidget):
                 task.te_text.setStyleSheet("border: none; border-style: none;")
     
     def update_task_text(self, old_task_text):
-
         new_text = self.tasks[old_task_text].te_text.toPlainText() # get the new text 
+        if new_text in self.tasks or new_text == "" or new_text == len(new_text) * " ": # case of not adding the task
+            return
         self.tasks[new_text] = self.tasks.pop(old_task_text)
 
         task = self.tasks[new_text]
@@ -392,11 +413,11 @@ class TDQuicker(QWidget):
         del self.tasks[task_text] # delete the task from the memory 
         self.refresh_progress_status()
 
-    def clear_tasks(self, done: bool):
+    def clear_tasks(self, done_status: bool):
         # delete task with given done state (True or False) 
 
         # Pop Up Warning
-        action = "delete all tasks marked as 'done tasks'" if done else "delete all tasks marked as 'not done'"
+        action = "delete all tasks marked as 'done tasks'" if done_status else "delete all tasks marked as 'not done'"
         
         reply = QMessageBox.question(self, "Warning", f"Are you sure you want to {action}?", 
         QMessageBox.Yes | QMessageBox.No, QMessageBox.No
@@ -407,15 +428,26 @@ class TDQuicker(QWidget):
         # Delete specified task: 
         deleted = []
         for task_text in self.tasks.keys():
-            if self.tasks[task_text].done == done:
-                delete_task(task_text, done)
+            status = self.tasks[task_text].done
+
+            if status == done_status:
+                delete_task(task_text, done_status)
                 deleted.append(task_text)
-                for elem in self.tasks[task_text].attributes:
-                    elem.deleteLater()
+
+                if status: 
+                    self.doneTasks_layout.removeWidget(self.tasks[task_text].GroupBox) # remove from layout so progress status works
+                else:
+                    self.tasks_layout.removeWidget(self.tasks[task_text].GroupBox)
+
+                for elem in self.tasks[task_text].attributes: # all components of the task
+                    # elem.deleteLater() doesnt refresh the layouts components, so it has to be done manually (code just above)
+                    elem.deleteLater() 
         
         for task_text in deleted: # remove removed task from self.tasks
             del self.tasks[task_text]
         del deleted
+        self.refresh_progress_status()
+        
         
     def move_task(self, task_text: str, from_save: bool =None):
 
