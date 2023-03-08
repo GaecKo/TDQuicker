@@ -19,6 +19,18 @@ QTextEdit#taskText {
     background-color: #394359;
 }
 
+QProgressBar {
+    border-radius: 8px;
+    border: 3px solid #555;
+    text-align: center;
+    color: white;
+}
+
+QProgressBar::chunk {
+    background-color: #394359;
+    border-radius: 4px; 
+}
+
 /* Style for QCheckBox */
 QCheckBox {
     font-size: 16px;

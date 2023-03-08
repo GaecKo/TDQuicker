@@ -1,31 +1,35 @@
 import sys
-from PyQt5.Qt import QDesktopServices, QUrl, QApplication, QColor, Qt
-from PyQt5.QtWidgets import QTextEdit
+from PySide6.QtWidgets import QApplication, QMainWindow, QToolBar
+from PySide6.QtCore import Qt 
+from PySide6.QtGui import QAction
+class MyWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
 
+    def initUI(self):
+        # Create a toolbar and add it to the menu bar
+        toolbar = QToolBar(self)
+        self.addToolBar(toolbar)
 
-class MyWidget(QTextEdit):
+        # Create a button for toggling the sticky state
+        sticky_action = QAction('Sticky', self)
+        sticky_action.setCheckable(True)
+        sticky_action.setChecked(True)
+        sticky_action.triggered.connect(self.toggle_sticky)
+        toolbar.addAction(sticky_action)    
 
-    def mousePressEvent(self, e):
-        self.anchor = self.anchorAt(e.pos())
-        if self.anchor:
-            QApplication.setOverrideCursor(Qt.PointingHandCursor)
+        # Set the window title and size
+        self.setWindowTitle('Sticky App')
+        self.setGeometry(100, 100, 500, 300)
 
-    def mouseReleaseEvent(self, e):
-        if self.anchor:
-            QDesktopServices.openUrl(QUrl(self.anchor))
-            QApplication.setOverrideCursor(Qt.ArrowCursor)
-            self.anchor = None
+    def toggle_sticky(self, checked):
+        # Toggle the sticky flag
+        self.setWindowFlag(Qt.WindowStaysOnTopHint, checked)
+        self.show()
 
-
-app = QApplication(sys.argv)
-editor = MyWidget()
-cursor = editor.textCursor()
-fmt = cursor.charFormat()
-fmt.setForeground(QColor('blue'))
-address = 'http://example.com'
-fmt.setAnchor(True)
-fmt.setAnchorHref(address)
-fmt.setToolTip(address)
-cursor.insertText("Hello world again", fmt)
-editor.show()
-app.exec_()
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = MyWindow()
+    window.show()
+    sys.exit(app.exec_())
