@@ -23,8 +23,9 @@
 ### <ins>Installation</ins>: 
 ##### Using Python 
 You need [python3.x](https://www.python.org/downloads/) installed. You will also need to install these packages:
-1. **PySide6**: `pip install PySide6`
-2. **functools**: `pip install functools`
+* **PySide6**: `pip install PySide6`
+
+* You can also do more simply: `pip install -r requirements.txt` which will check other preinstalled packages as well. 
 
 The app also requires these already installed packages:
 1. **Datetime** 

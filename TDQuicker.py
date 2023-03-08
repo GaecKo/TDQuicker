@@ -3,15 +3,13 @@
 # GitHub: https://github.com/GaecKo/TDQuicker 
 
 from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QTextEdit, QVBoxLayout, QPushButton, QWidget, QApplication, QLineEdit, QCheckBox, QLabel, QGroupBox, QMessageBox, QScrollArea, QProgressBar
-from PySide6.QtGui import QIcon, QTextOption
+from PySide6.QtGui import QIcon, QTextOption, QTextCursor
 from PySide6.QtCore import Qt, QPropertyAnimation
 
 from datetime import datetime
 from data.data import * 
 import time
 import re
-
-from functools import partial
 
 # sticky mode ! 
 
@@ -276,8 +274,8 @@ class TDQuicker(QWidget):
         
     def setup_connections(self):
         self.ip_add.returnPressed.connect(self.add_task)
-        self.btn_clearDone.pressed.connect(partial(self.clear_tasks, True))
-        self.btn_clearNotDone.pressed.connect(partial(self.clear_tasks, False))
+        self.btn_clearDone.pressed.connect(lambda: self.clear_tasks(True))
+        self.btn_clearNotDone.pressed.connect(lambda: self.clear_tasks(False))
         self.btn_sticky.pressed.connect(self.switch_sticky)
     
     def switch_sticky(self):
@@ -310,11 +308,11 @@ class TDQuicker(QWidget):
         task = self.Task(task_text, date)
         
         # Setup connections of the task 
-        task.CheckButton.pressed.connect(partial(self.task_checked, task.task_text))
+        task.CheckButton.pressed.connect(lambda: self.task_checked(task.task_text))
 
-        task.DeleteButton.pressed.connect(partial(self.task_delete, task.task_text))
+        task.DeleteButton.pressed.connect(lambda: self.task_delete(task.task_text))
 
-        task.EditButton.pressed.connect(partial(self.switch_edit_mode, task.task_text))
+        task.EditButton.pressed.connect(lambda: self.switch_edit_mode(task.task_text))
 
         task.te_text.keyPressEvent = lambda event: self.update_task_text(task.task_text) if event.key() == Qt.Key_Return else QTextEdit.keyPressEvent(task.te_text, event) 
 
@@ -339,6 +337,10 @@ class TDQuicker(QWidget):
 
             task.EditButton.setStyleSheet("border: 2px white; border-style: none none solid none; ")
             task.EditButton.setIcon(QIcon(".assets/back.svg"))
+            task.te_text.setFocus()
+            cursor = task.te_text.textCursor() # place cursor at end of QTextEdit
+            cursor.movePosition(QTextCursor.End)
+            task.te_text.setTextCursor(cursor)
         else:
             task.te_text.setReadOnly(True) # if it has to be only readable
             task.EditButton.setStyleSheet("border: none; border-style: none;")
@@ -350,12 +352,20 @@ class TDQuicker(QWidget):
                 task.te_text.setStyleSheet("border: none; border-style: none; text-decoration: line-through;")
             else:
                 task.te_text.setStyleSheet("border: none; border-style: none;")
+    def linkify(self, text):
+        # Regular expression pattern for matching URLs
+        url_pattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+
+        # Replace URLs with HTML links
+        return url_pattern.sub(lambda match: '<a href="{}">{}</a>'.format(match.group(0), match.group(0)), text)
     
     def update_task_text(self, old_task_text):
         new_text = self.tasks[old_task_text].te_text.toPlainText() # get the new text 
         if new_text in self.tasks or new_text == "" or new_text == len(new_text) * " ": # case of not adding the task
             return
+
         self.tasks[new_text] = self.tasks.pop(old_task_text)
+        self.tasks[new_text].te_text.setHtml(self.linkify(new_text))
 
         task = self.tasks[new_text]
         task.task_text = new_text # refresh the task attributes 
@@ -370,13 +380,14 @@ class TDQuicker(QWidget):
         
         # Refresh connections if task name was changed
         task.CheckButton.pressed.disconnect()
-        task.CheckButton.pressed.connect(partial(self.task_checked, task_text))
+        
+        task.CheckButton.pressed.connect(lambda: self.task_checked(task_text))
 
         task.DeleteButton.pressed.disconnect()
-        task.DeleteButton.pressed.connect(partial(self.task_delete, task_text))
+        task.DeleteButton.pressed.connect(lambda: self.task_delete(task_text))
 
         task.EditButton.pressed.disconnect()
-        task.EditButton.pressed.connect(partial(self.switch_edit_mode, task_text))
+        task.EditButton.pressed.connect(lambda: self.switch_edit_mode(task_text))
 
 
         task.te_text.keyPressEvent = lambda event: self.update_task_text(task_text) if event.key() == Qt.Key_Return else QTextEdit.keyPressEvent(task.te_text, event) 
