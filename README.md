@@ -13,7 +13,7 @@
 
 </h1>
 
-**TDQuicker** is a simple **To Do list** made with `PySide6`, `Qt`. 
+**TDQuicker** is a simple **To Do list** made with `PySide6`. 
 <p float="left" align="center">
     <img src=".git_files/TDQuicker.png" width=300>
 	<img src=".git_files/all_done.png" width=300>
@@ -24,14 +24,15 @@
 ### Using Python 
 
 You need [python3.x](https://www.python.org/downloads/) installed. 
-> __warning__: The `shiboken6` package (used by `PySide6`) seems to not work on all python version, so you need `python3.x ≥ python3.7`. 
 
-You will also need to install these packages:
-* [X] **PySide6**: `pip install PySide6` (will install other required packages like `shiboken6`)
+> __Warning__: The `shiboken6` package (used by `PySide6`) seems to not work on all python version, so you need `python3.x ≥ python3.7`. 
 
-> __note__: You can also use: `pip install -r requirements.txt` which will check other preinstalled packages as well. 
+You will also need to install this package:
+* [X] **PySide6**: `pip install PySide6` (will install other required packages like `shiboken6`, ...)
 
-The app also requires these already installed packages:
+> __Note__: You can also use: `pip install -r requirements.txt` which will check other preinstalled packages as well. 
+
+The app also uses these already installed packages:
 * [X] **datetime** 
 * [X] **time** 
 * [X] **re** 
@@ -70,7 +71,9 @@ The app also requires these already installed packages:
 ****
 
 ## <ins>Known Issues</ins>:
-A few issues are currently known. 
+
+> __Note__:A few issues are currently known. 
+
 1. Task alignement when the scroll bar is not centered: 
 	* I have tried a lot of things to fix this, but without any result... 
 
