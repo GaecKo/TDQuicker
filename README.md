@@ -22,21 +22,24 @@
 ****
 ### <ins>Installation</ins>: 
 ##### Using Python 
-You need [python3.x](https://www.python.org/downloads/) installed. You will also need to install these packages:
-* **PySide6**: `pip install PySide6`
+
+You need [python3.x](https://www.python.org/downloads/) installed. 
+
+⚠️ The `shiboken6` package (used by `PySide6`) seems to not work on all python version, so you need `python3.x ≥ python3.7`. You will also need to install these packages:
+* **PySide6**: `pip install PySide6` (will install other required packages like `shiboken6`)
 
 * You can also do more simply: `pip install -r requirements.txt` which will check other preinstalled packages as well. 
 
 The app also requires these already installed packages:
-1. **Datetime** 
+1. **datetime** 
 2. **time** 
 3. **re** 
 
 ****
 
 ### <ins>Launch</ins>:
-1. Place yourself in the directory where you installed the app (for example `/home/usr/Documents/TDQuicker/`) 
-2. You can then launch the `.py` file:`python TDQuicker.py`. This will start the GUI. 
+1. Place yourself in the directory where you installed the app (for example `~/Documents/TDQuicker/`) 
+2. You can then launch the `.py` file: `python TDQuicker.py`. This will start the GUI. 
 
 ****
 
