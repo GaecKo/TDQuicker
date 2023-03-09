@@ -8,10 +8,7 @@ from PySide6.QtCore import Qt, QPropertyAnimation
 
 from datetime import datetime
 from data.data import * 
-import time
-import re
-
-# sticky mode ! 
+import re, sys, time, json
 
 class ProgressBar(QProgressBar):
     def __init__(self):
@@ -336,7 +333,7 @@ class TDQuicker(QWidget):
                 task.te_text.setStyleSheet("border: 2px white; border-style: none none solid none; text-decoration: line-through;")
 
             task.EditButton.setStyleSheet("border: 2px white; border-style: none none solid none; ")
-            task.EditButton.setIcon(QIcon(".assets/back.svg"))
+            task.EditButton.setIcon(QIcon(".assets/back.png"))
             task.te_text.setFocus()
             cursor = task.te_text.textCursor() # place cursor at end of QTextEdit
             cursor.movePosition(QTextCursor.End)
@@ -525,9 +522,10 @@ class TDQuicker(QWidget):
 
 
 if __name__ == "__main__":
-    app = QApplication()
-    app_icon = QIcon(".assets/WIcon.svg")
+    app = QApplication(sys.argv)
+    app_icon = QIcon(".assets/WIcon.png")
     app.setWindowIcon(app_icon)
+
     with open(".assets/style.css", 'r') as file:
         app.setStyleSheet(file.read())
 

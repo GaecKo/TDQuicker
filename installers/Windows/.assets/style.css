@@ -1,0 +1,110 @@
+/* Apply a dark background color to all widgets */
+QWidget {
+    background-color: #292929;
+}
+  
+/* Style for QLabel */
+QLabel {
+    color: #f2f2f2;
+    font-size: 16px;
+    text-decoration: underline;
+    padding-left: 5px;
+}
+
+QToolTip {
+    background-color: #404040; 
+    color: white;
+    font-size: 14px; 
+    border: 1px solid black;
+    border-radius: 8px;
+}
+
+QTextEdit#taskText {
+    border: 0px;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    background-color: #394359;
+}
+
+QProgressBar {
+    border-radius: 8px;
+    border: 3px solid #555;
+    text-align: center;
+    color: white;
+}
+
+QProgressBar::chunk {
+    background-color: #394359;
+    border-radius: 4px; 
+}
+
+/* Style for QCheckBox */
+QCheckBox {
+    font-size: 16px;
+    background-color: #394359;
+    padding: 5px;
+}
+  
+QCheckBox::indicator {
+    width: 20px;
+    height: 20px;
+}
+
+
+/* Style for QLineEdit */
+QLineEdit {
+    background-color: #606060;
+    border: 3px solid #394359;
+    border-radius: 10px;
+    color: rgb(186, 186, 186);
+    font-size: 16px;
+    padding: 6px;
+}
+  
+/* Style for QPushButton */
+QPushButton {
+    background-color: #394359;
+    border: none;
+    border-radius: 8px;
+    color: #f2f2f2;
+    font-size: 16px;
+    padding: 8px;
+}
+  
+/* Style for QGroupBox */
+QGroupBox {
+    background-color: #394359;
+    border: 2px solid #555;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-top: 7px; 
+}
+
+  
+QScrollArea {
+    border: 0px;
+    margin: 10% 0;
+}
+
+QScrollBar:vertical {
+    background-color: #292929;
+    width: 7px;
+    margin: 0px 0px 0px 0px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0px;
+    background: none;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}
