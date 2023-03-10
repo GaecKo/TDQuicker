@@ -1,5 +1,5 @@
 # Author: Arthur De Neyer (GaecKo)
-# Date: 06/03/2023
+# Date: 10/03/2023
 # GitHub: https://github.com/GaecKo/TDQuicker 
 
 from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QTextEdit, QVBoxLayout, QPushButton, QWidget, QApplication, QLineEdit, QCheckBox, QLabel, QGroupBox, QMessageBox, QScrollArea, QProgressBar

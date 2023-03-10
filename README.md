@@ -1,4 +1,4 @@
-# <h1 align="center"><ins> TDQuicker</ins> v0.5.0 ![Python](.git_files/python.ico)!</h1>
+# <h1 align="center"><ins> TDQuicker</ins> v1.0.0 ![Python](.git_files/python.ico)!</h1>
 
 <p align="center">
 	<img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/GaecKo/TDQuicker?color=lightblue" />
@@ -21,14 +21,22 @@
 
 ****
 ## <ins>Installation</ins>: 
-### Using Python 
+### Installer for Windows users
+In the last release, look up for the `TDQuickerInstaller.exe` file. After downloading it, launch it and follow the instructions shown in the installer. 
+
+Once done, TDQuicker should be useable! 
+
+****
+
+### Using Python (For Mac & Linux)
 
 You need [python3.x](https://www.python.org/downloads/) installed. 
 
 > __Warning__: The `shiboken6` package (used by `PySide6`) seems to not work on all python version, so you need `python3.x ≥ python3.7`. 
 
 You will also need to install this package:
-* [X] **PySide6**: `pip install PySide6` (will install other required packages like `shiboken6`, ...)
+* [X] **PySide6**: `pip install PySide6` 
+> __Note__: it will install other required packages like `shiboken6`, ...
 
 > __Note__: You can also use: `pip install -r requirements.txt` which will check other preinstalled packages as well. 
 
@@ -39,9 +47,20 @@ The app also uses these already installed packages:
 
 ****
 
-## <ins>Launch</ins>:
-1. Place yourself in the directory where you installed the app with a terminal (for example `~/Documents/TDQuicker/`) 
-2. You can then launch the `.py` file: `python TDQuicker.py`. This will start the GUI. 
+Once your python is set up, you can follow these instructions:
+1. Clone the git: 
+```git
+git clone git@github.com:GaecKo/TDQuicker.git
+```
+2. Place yourself in the git directory
+```bash
+cd TDQuicker
+```
+3. You can then launch the `.py` file: 
+```bash
+python TDQuicker.py
+``` 
+> __Warning__: You may need to use `python3` as a command instead of `python`
 
 ****
 
@@ -55,7 +74,7 @@ The app also uses these already installed packages:
 > To mark a task as done, you can click on the box and it will move the task to the done section 
 
 ### Edit Task
-> To edit a task, click on pencil button, place yourself in the text, modify the content as you wish and press enter to save. You can also reclick on the same button to cancel the changes. 
+> To edit a task, click on pencil button, place yourself in the text, modify the content as you wish and press enter to save. You can also click on the same button again to cancel changes. 
 
 
 ### Delete Task
@@ -72,9 +91,9 @@ The app also uses these already installed packages:
 
 ## <ins>Known Issues</ins>:
 
-> __Note__:A few issues are currently known. 
+> __Note__: A few issues are currently known. 
 
-1. Task alignement when the scroll bar is not centered: 
+1. Task alignment when the scroll bar is not shown: 
 	* I have tried a lot of things to fix this, but without any result... 
 
 2. Height of the task boxes:
