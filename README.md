@@ -22,7 +22,7 @@
 ****
 ## <ins>Installation</ins>: 
 ### Installer for Windows users
-In the last release, look up for the `TDQuickerInstaller.exe` file. After downloading it, launch it and follow the instructions shown in the installer. 
+In the last release([v1.0.0](https://github.com/GaecKo/TDQuicker/releases/tag/v1.0.0)), look up for the `TDQuickerInstaller.exe` file. After downloading it, launch it and follow the instructions shown in the installer. 
 
 Once done, TDQuicker should be useable! 
 
