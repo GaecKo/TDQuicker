@@ -7,11 +7,11 @@ from PySide6.QtGui import QIcon, QTextOption, QTextCursor
 from PySide6.QtCore import Qt, QPropertyAnimation
 
 from datetime import datetime
-from data.data import * 
+from data.data import *
 import time
 import re
 
-# sticky mode ! 
+# sticky mode !
 
 class ProgressBar(QProgressBar):
     def __init__(self):
@@ -56,7 +56,7 @@ class TDQuicker(QWidget):
 
             # list for easier deletion
             self.attributes = [self.GroupBox, self.GenHBox, self.LeftH, self.CheckButton, self.te_text, self.RightH, self.DeleteButton]
-            
+
         def create_composers(self):
             # Create the QGroupBox 
             self.GroupBox = QGroupBox()
@@ -74,14 +74,14 @@ class TDQuicker(QWidget):
 
             # Text of the task 
             self.te_text = QTextEdit()
-            
+
             self.cus = QIcon(".assets/edit.png")
             self.EditButton = QPushButton(self.cus, "")
 
             # Icon and button to delete task
             self.bin = QIcon(".assets/bin.png")
             self.DeleteButton = QPushButton(self.bin, "")
-        
+
         def linkify(self, text):
             # Regular expression pattern for matching URLs
             url_pattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
@@ -106,7 +106,7 @@ class TDQuicker(QWidget):
             # Buttons size
             self.DeleteButton.setMaximumSize(20, 30)
             self.EditButton.setMaximumSize(20, 30)
-        
+
         def add_widgets_to_composers(self):
             # Sub left layout for Check button and text
             self.LeftH.addWidget(self.CheckButton)
@@ -128,8 +128,8 @@ class TDQuicker(QWidget):
 
             recommanded_height = int(len(self.task_text) * 0.9)
             self.te_text.setMinimumHeight(recommanded_height)
-            self.GroupBox.setMaximumHeight(recommanded_height + 50) 
-                
+            self.GroupBox.setMaximumHeight(recommanded_height + 50)
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("TDQuicker")
@@ -138,7 +138,7 @@ class TDQuicker(QWidget):
         self.__init_tasks__()
 
     # ========= Initial UI =========
-    def __init_ui__(self): 
+    def __init_ui__(self):
         self.create_widgets()
         self.modify_widgets()
         self.create_layouts()
@@ -156,8 +156,8 @@ class TDQuicker(QWidget):
         self.main_widget = QWidget()
 
         # Add Clear All button: 
-        self.btn_clearDone = QPushButton(icon=QIcon(".assets/bin.png"), text="Done") 
-        self.btn_clearNotDone = QPushButton(icon=QIcon(".assets/bin.png"), text="To Do") 
+        self.btn_clearDone = QPushButton(icon=QIcon(".assets/bin.png"), text="Done")
+        self.btn_clearNotDone = QPushButton(icon=QIcon(".assets/bin.png"), text="To Do")
 
         # Label for Tasks
         self.lb_tasks = QLabel(text="To Do Tasks:")
@@ -183,7 +183,7 @@ class TDQuicker(QWidget):
         size_policy.setVerticalPolicy(QSizePolicy.Fixed)
 
         self.lb_tasks.setSizePolicy(size_policy)
-        
+
         self.lb_doneTasks.setSizePolicy(size_policy)
 
         # value for progress bar:
@@ -200,7 +200,7 @@ class TDQuicker(QWidget):
         # Create the scrollable widget and layout
         self.scroll_widget = QWidget()
         self.scroll_layout = QVBoxLayout()
-        self.scroll_area = QScrollArea(widgetResizable=True) 
+        self.scroll_area = QScrollArea(widgetResizable=True)
 
         # Tasks layout:
         self.tasks_layout = QVBoxLayout()
@@ -226,13 +226,13 @@ class TDQuicker(QWidget):
         self.top_layout.addWidget(self.ip_add)
         self.top_layout.addWidget(self.btn_sticky)
 
-        self.main_layout.addLayout(self.top_layout) 
+        self.main_layout.addLayout(self.top_layout)
 
         # ---- Scrollable Widget: 
 
-        
+
         self.scroll_widget.setLayout(self.scroll_layout)
-        
+
 
         # Add the two layouts to the scrollable layout
         self.scroll_layout.addLayout(self.tasks_layout, 0)
@@ -241,7 +241,7 @@ class TDQuicker(QWidget):
 
         self.scroll_layout.addLayout(self.doneTasks_layout)
 
-        
+
         self.scroll_area.setWidget(self.scroll_widget)
 
         size_policy = QSizePolicy()
@@ -262,7 +262,7 @@ class TDQuicker(QWidget):
         self.pb_layout.addWidget(self.progress_bar)
 
         # Add done tasks label
-        self.doneTasks_layout.addWidget(self.lb_doneTasks) 
+        self.doneTasks_layout.addWidget(self.lb_doneTasks)
 
         self.clear_layout.addWidget(self.btn_clearDone)
         self.clear_layout.addSpacing(20)
@@ -271,13 +271,13 @@ class TDQuicker(QWidget):
         self.main_layout.addLayout(self.pb_layout)
         self.main_layout.addSpacing(10)
         self.main_layout.addLayout(self.clear_layout)
-        
+
     def setup_connections(self):
         self.ip_add.returnPressed.connect(self.add_task)
         self.btn_clearDone.pressed.connect(lambda: self.clear_tasks(True))
         self.btn_clearNotDone.pressed.connect(lambda: self.clear_tasks(False))
         self.btn_sticky.pressed.connect(self.switch_sticky)
-    
+
     def switch_sticky(self):
         flags = self.windowFlags()
         if flags & Qt.WindowStaysOnTopHint:
@@ -286,7 +286,7 @@ class TDQuicker(QWidget):
         else:
             self.setWindowFlags(flags | Qt.WindowStaysOnTopHint)
             self.btn_sticky.setIcon(QIcon(".assets/sticked.png"))
-        
+
         self.show()
 
     # ========= Tasks Addition =========
@@ -306,7 +306,7 @@ class TDQuicker(QWidget):
 
         # Create instance of task and its widgets / layouts
         task = self.Task(task_text, date)
-        
+
         # Setup connections of the task 
         task.CheckButton.pressed.connect(lambda: self.task_checked(task.task_text))
 
@@ -314,7 +314,7 @@ class TDQuicker(QWidget):
 
         task.EditButton.pressed.connect(lambda: self.switch_edit_mode(task.task_text))
 
-        task.te_text.keyPressEvent = lambda event: self.update_task_text(task.task_text) if event.key() == Qt.Key_Return else QTextEdit.keyPressEvent(task.te_text, event) 
+        task.te_text.keyPressEvent = lambda event: self.update_task_text(task.task_text) if event.key() == Qt.Key_Return else QTextEdit.keyPressEvent(task.te_text, event)
 
         # Add task to tasks_layout
         if date == None: # means that we didnt call the function from the load_save
@@ -327,7 +327,7 @@ class TDQuicker(QWidget):
 
     def switch_edit_mode(self, task_text):
         task = self.tasks[task_text]
-        
+
         if task.te_text.isReadOnly(): # if it has to be editable
             task.te_text.setReadOnly(False)
             if not task.done:
@@ -358,9 +358,9 @@ class TDQuicker(QWidget):
 
         # Replace URLs with HTML links
         return url_pattern.sub(lambda match: '<a href="{}">{}</a>'.format(match.group(0), match.group(0)), text)
-    
+
     def update_task_text(self, old_task_text):
-        new_text = self.tasks[old_task_text].te_text.toPlainText() # get the new text 
+        new_text = self.tasks[old_task_text].te_text.toPlainText() # get the new text
         if new_text in self.tasks or new_text == "" or new_text == len(new_text) * " ": # case of not adding the task
             return
 
@@ -368,7 +368,7 @@ class TDQuicker(QWidget):
         self.tasks[new_text].te_text.setHtml(self.linkify(new_text))
 
         task = self.tasks[new_text]
-        task.task_text = new_text # refresh the task attributes 
+        task.task_text = new_text # refresh the task attributes
         task.refresh_size()
 
         self.refresh_saved_task(old_task_text, new_text)
@@ -377,10 +377,10 @@ class TDQuicker(QWidget):
 
     def refresh_task_connections(self, task_text):
         task = self.tasks[task_text]
-        
+
         # Refresh connections if task name was changed
         task.CheckButton.pressed.disconnect()
-        
+
         task.CheckButton.pressed.connect(lambda: self.task_checked(task_text))
 
         task.DeleteButton.pressed.disconnect()
@@ -390,24 +390,24 @@ class TDQuicker(QWidget):
         task.EditButton.pressed.connect(lambda: self.switch_edit_mode(task_text))
 
 
-        task.te_text.keyPressEvent = lambda event: self.update_task_text(task_text) if event.key() == Qt.Key_Return else QTextEdit.keyPressEvent(task.te_text, event) 
+        task.te_text.keyPressEvent = lambda event: self.update_task_text(task_text) if event.key() == Qt.Key_Return else QTextEdit.keyPressEvent(task.te_text, event)
 
     def task_checked(self, task_text, from_save=False):
         checked_task = self.tasks[task_text] # get instance that was checked
         if not from_save:
             checked_task.CheckButton.setChecked(True)
             time.sleep(0.2) # better user experience
-            
+
         if checked_task.done == False:
             checked_task.done = True
-            checked_task.CheckButton.setStyleSheet("color:#2d7121;") # apply style 
+            checked_task.CheckButton.setStyleSheet("color:#2d7121;") # apply style
             checked_task.te_text.setStyleSheet("text-decoration: line-through;")
         else:
             checked_task.done = False
             checked_task.CheckButton.setStyleSheet("color: white;") # apply style
             checked_task.te_text.setStyleSheet("text-decoration: none;")
         self.move_task(task_text, from_save)
-    
+
     def task_delete(self, task_text: str):
 
         to_delete_task = self.tasks[task_text] # get instance of Task
@@ -419,9 +419,9 @@ class TDQuicker(QWidget):
         delete_task(task_text, to_delete_task.done) # delete the task from memory
 
         for elem in to_delete_task.attributes:
-            elem.deleteLater() # force delete elements of memory 
+            elem.deleteLater() # force delete elements of memory
 
-        del self.tasks[task_text] # delete the task from the memory 
+        del self.tasks[task_text] # delete the task from the memory
         self.refresh_progress_status()
 
     def clear_tasks(self, done_status: bool):
@@ -429,10 +429,8 @@ class TDQuicker(QWidget):
 
         # Pop Up Warning
         action = "delete all tasks marked as 'done tasks'" if done_status else "delete all tasks marked as 'not done'"
-        
-        reply = QMessageBox.question(self, "Warning", f"Are you sure you want to {action}?", 
-        QMessageBox.Yes | QMessageBox.No, QMessageBox.No
-    )
+
+        reply = QMessageBox.question(self, "Warning", "Are you sure you want to {}?".format(action), QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply != QMessageBox.Yes:
             return
 
@@ -445,29 +443,29 @@ class TDQuicker(QWidget):
                 delete_task(task_text, done_status)
                 deleted.append(task_text)
 
-                if status: 
+                if status:
                     self.doneTasks_layout.removeWidget(self.tasks[task_text].GroupBox) # remove from layout so progress status works
                 else:
                     self.tasks_layout.removeWidget(self.tasks[task_text].GroupBox)
 
                 for elem in self.tasks[task_text].attributes: # all components of the task
                     # elem.deleteLater() doesnt refresh the layouts components, so it has to be done manually (code just above)
-                    elem.deleteLater() 
-        
+                    elem.deleteLater()
+
         for task_text in deleted: # remove removed task from self.tasks
             del self.tasks[task_text]
         del deleted
         self.refresh_progress_status()
-        
-        
+
+
     def move_task(self, task_text: str, from_save: bool =None):
 
-        GroupBox = self.tasks[task_text].GroupBox # get widget to move 
+        GroupBox = self.tasks[task_text].GroupBox # get widget to move
         if self.tasks[task_text].done: # move group to done task layout
 
             self.doneTasks_layout.addWidget(GroupBox) # add to new state layout
-            self.tasks[task_text].CheckButton.setChecked(True) # set check state of button 
-            if not from_save: # so we don't do useless / error making operations 
+            self.tasks[task_text].CheckButton.setChecked(True) # set check state of button
+            if not from_save: # so we don't do useless / error making operations
                 move_saved_task(task_text, True) # Manage task saving
                 self.tasks_layout.removeWidget(GroupBox)
                 self.refresh_progress_status()
@@ -475,8 +473,8 @@ class TDQuicker(QWidget):
         else: # move group to not done task layout
 
             self.tasks_layout.addWidget(GroupBox) # add to new state layout
-            self.tasks[task_text].CheckButton.setChecked(False) # set check state of button 
-            if not from_save: # so we don't do useless / error making operations 
+            self.tasks[task_text].CheckButton.setChecked(False) # set check state of button
+            if not from_save: # so we don't do useless / error making operations
                 move_saved_task(task_text, False) # Manage task saving
                 self.doneTasks_layout.removeWidget(GroupBox)
                 self.refresh_progress_status()
@@ -486,7 +484,7 @@ class TDQuicker(QWidget):
     def refresh_saved_task(self, old_text, new_text):
         delete_task(old_text, self.tasks[new_text].done)
         save_task(new_text, self.tasks[new_text].date, self.tasks[new_text].done)
-        
+
     def load_tasks(self):
         loaded = load_content() # get saved tasks
         self.tasks = {}
@@ -494,16 +492,16 @@ class TDQuicker(QWidget):
             # {state: {task_name: date}}
             for task_name, date in loaded[state].items():
 
-                self.add_task(task_name, date) # we call the function specifying elements so that it knows we're adding saved tasks. 
+                self.add_task(task_name, date) # we call the function specifying elements so that it knows we're adding saved tasks.
 
                 task = self.tasks[task_name] # get instance that was just created
 
                 # We set it to the opposite, and then simulate a check action on it
-                task.done = False if state == "done" else True 
-                self.task_checked(task_name, True) # we clarify the situation with the 'from_save' set to true, so that it knows it doesnt have to change values in the storage and remove it from the initial layout. 
+                task.done = False if state == "done" else True
+                self.task_checked(task_name, True) # we clarify the situation with the 'from_save' set to true, so that it knows it doesnt have to change values in the storage and remove it from the initial layout.
 
         self.refresh_progress_status()
-        return self.tasks 
+        return self.tasks
 
     # ========= Progress Status =========
     def refresh_progress_status(self):
@@ -511,9 +509,9 @@ class TDQuicker(QWidget):
         todo = self.tasks_layout.count() - 1
 
         total = done + todo
-        
-        self.lb_tasks.setText(f"To Do Tasks ({todo}):")
-        self.lb_doneTasks.setText(f"Done Tasks ({done}):")
+
+        self.lb_tasks.setText("To Do Tasks ({}):".format(todo))
+        self.lb_doneTasks.setText("Done Tasks ({}):".format(done))
 
         percentage = (done / max(total, 1) * 100)
         self.progress_bar.update_value(percentage)
