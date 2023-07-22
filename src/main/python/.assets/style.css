@@ -2,7 +2,11 @@
 QWidget {
     background-color: #292929;
 }
-  
+
+QWidget#WindowWidget {
+    border-radius: 10px;
+}
+
 /* Style for QLabel */
 QLabel {
     color: #f2f2f2;
