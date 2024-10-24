@@ -7,8 +7,10 @@ from PySide6.QtGui import QIcon, QTextOption, QTextCursor
 from PySide6.QtCore import Qt, QPropertyAnimation
 
 from datetime import datetime
-from data.data import * 
-import re, sys, time, json
+from data.data import *
+import re, sys, time, json, os
+
+ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".assets/")
 
 class ProgressBar(QProgressBar):
     def __init__(self):
@@ -55,7 +57,7 @@ class TDQuicker(QWidget):
             self.attributes = [self.GroupBox, self.GenHBox, self.LeftH, self.CheckButton, self.te_text, self.RightH, self.DeleteButton]
 
         def create_composers(self):
-            # Create the QGroupBox 
+            # Create the QGroupBox
             self.GroupBox = QGroupBox()
 
             # Create the main layout containing the elements to place in GroupBox
@@ -69,14 +71,14 @@ class TDQuicker(QWidget):
             # Create the QCheckBox widgets
             self.CheckButton = QCheckBox()
 
-            # Text of the task 
+            # Text of the task
             self.te_text = QTextEdit()
 
-            self.cus = QIcon(".assets/edit.png")
+            self.cus = QIcon(os.path.join(ASSETS, "edit.png"))
             self.EditButton = QPushButton(self.cus, "")
 
             # Icon and button to delete task
-            self.bin = QIcon(".assets/bin.png")
+            self.bin = QIcon(os.path.join(ASSETS, "bin.png"))
             self.DeleteButton = QPushButton(self.bin, "")
 
         def linkify(self, text):
@@ -91,7 +93,7 @@ class TDQuicker(QWidget):
             # Cross task size
             self.CheckButton.setMaximumSize(25, 25)
 
-            # te_text options: 
+            # te_text options:
             # self.te_text.setPlainText(self.task_text)
             self.te_text.setHtml(self.linkify(self.task_text))
             self.te_text.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
@@ -147,14 +149,14 @@ class TDQuicker(QWidget):
         # Add Task Bar:
         self.ip_add = QLineEdit()
         # Add Sticky button
-        self.btn_sticky = QPushButton(icon=QIcon(".assets/stick.png"))
+        self.btn_sticky = QPushButton(icon=QIcon(os.path.join(ASSETS, "stick.png")))
 
         # main widget for scrollable uses
         self.main_widget = QWidget()
 
-        # Add Clear All button: 
-        self.btn_clearDone = QPushButton(icon=QIcon(".assets/bin.png"), text="Done")
-        self.btn_clearNotDone = QPushButton(icon=QIcon(".assets/bin.png"), text="To Do")
+        # Add Clear All button:
+        self.btn_clearDone = QPushButton(icon=QIcon(os.path.join(ASSETS, "bin.png")), text="Done")
+        self.btn_clearNotDone = QPushButton(icon=QIcon(os.path.join(ASSETS, "bin.png")), text="To Do")
 
         # Label for Tasks
         self.lb_tasks = QLabel(text="To Do Tasks:")
@@ -162,7 +164,7 @@ class TDQuicker(QWidget):
         # Label for DoneTasks
         self.lb_doneTasks = QLabel(text="Done Tasks:")
 
-        # Progress bar 
+        # Progress bar
         self.progress_bar = ProgressBar()
 
     def modify_widgets(self):
@@ -170,7 +172,7 @@ class TDQuicker(QWidget):
         self.ip_add.setPlaceholderText("Add Task")
         self.ip_add.setMinimumHeight(40)
 
-        # sticky button 
+        # sticky button
         self.btn_sticky.setMaximumSize(40, 40)
         self.btn_sticky.setToolTip("Enable / Disable Sticky mode")
 
@@ -188,7 +190,7 @@ class TDQuicker(QWidget):
         self.progress_bar.setMaximum(100)
 
     def create_layouts(self):
-        # Main layout: 
+        # Main layout:
         self.main_layout = QVBoxLayout(self)
 
         # Top layout for input and sticky button
@@ -219,13 +221,13 @@ class TDQuicker(QWidget):
         self.doneTasks_layout.setAlignment(Qt.AlignTop)
 
     def add_widgets_to_layouts(self):
-        # main layout disposition: 
+        # main layout disposition:
         self.top_layout.addWidget(self.ip_add)
         self.top_layout.addWidget(self.btn_sticky)
 
         self.main_layout.addLayout(self.top_layout)
 
-        # ---- Scrollable Widget: 
+        # ---- Scrollable Widget:
 
 
         self.scroll_widget.setLayout(self.scroll_layout)
@@ -250,7 +252,7 @@ class TDQuicker(QWidget):
         self.scroll_area.setAlignment(Qt.AlignAbsolute)
         self.main_layout.addWidget(self.scroll_area)
 
-        # ---- 
+        # ----
 
         # Add tasks label
         self.tasks_layout.addWidget(self.lb_tasks)
@@ -279,10 +281,10 @@ class TDQuicker(QWidget):
         flags = self.windowFlags()
         if flags & Qt.WindowStaysOnTopHint:
             self.setWindowFlags(flags & ~Qt.WindowStaysOnTopHint)
-            self.btn_sticky.setIcon(QIcon(".assets/stick.png"))
+            self.btn_sticky.setIcon(QIcon(os.path.join(ASSETS, "stick.png")))
         else:
             self.setWindowFlags(flags | Qt.WindowStaysOnTopHint)
-            self.btn_sticky.setIcon(QIcon(".assets/sticked.png"))
+            self.btn_sticky.setIcon(QIcon(os.path.join(ASSETS, "sticked.png")))
 
         self.show()
 
@@ -304,7 +306,7 @@ class TDQuicker(QWidget):
         # Create instance of task and its widgets / layouts
         task = self.Task(task_text, date)
 
-        # Setup connections of the task 
+        # Setup connections of the task
         task.CheckButton.pressed.connect(lambda: self.task_checked(task.task_text))
 
         task.DeleteButton.pressed.connect(lambda: self.task_delete(task.task_text))
@@ -316,7 +318,7 @@ class TDQuicker(QWidget):
         # Add task to tasks_layout
         if date == None: # means that we didnt call the function from the load_save
             self.tasks_layout.addWidget(task.GroupBox)
-            save_task(task_text, task.date)  # within storage 
+            save_task(task_text, task.date)  # within storage
             self.refresh_progress_status()
 
         # Keep task in memory
@@ -333,7 +335,7 @@ class TDQuicker(QWidget):
                 task.te_text.setStyleSheet("border: 2px white; border-style: none none solid none; text-decoration: line-through;")
 
             task.EditButton.setStyleSheet("border: 2px white; border-style: none none solid none; ")
-            task.EditButton.setIcon(QIcon(".assets/back.png"))
+            task.EditButton.setIcon(QIcon(os.path.join(ASSETS, "back.png")))
             task.te_text.setFocus()
             cursor = task.te_text.textCursor() # place cursor at end of QTextEdit
             cursor.movePosition(QTextCursor.End)
@@ -341,7 +343,7 @@ class TDQuicker(QWidget):
         else:
             task.te_text.setReadOnly(True) # if it has to be only readable
             task.EditButton.setStyleSheet("border: none; border-style: none;")
-            task.EditButton.setIcon(QIcon(".assets/edit.png"))
+            task.EditButton.setIcon(QIcon(os.path.join(ASSETS, "edit.png")))
             if task.te_text.toPlainText() != task_text:
                 task.te_text.setText(task_text)
 
@@ -422,7 +424,7 @@ class TDQuicker(QWidget):
         self.refresh_progress_status()
 
     def clear_tasks(self, done_status: bool):
-        # delete task with given done state (True or False) 
+        # delete task with given done state (True or False)
 
         # Pop Up Warning
         action = "delete all tasks marked as 'done tasks'" if done_status else "delete all tasks marked as 'not done'"
@@ -431,7 +433,7 @@ class TDQuicker(QWidget):
         if reply != QMessageBox.Yes:
             return
 
-        # Delete specified task: 
+        # Delete specified task:
         deleted = []
         for task_text in self.tasks.keys():
             status = self.tasks[task_text].done
@@ -517,17 +519,3 @@ class TDQuicker(QWidget):
             self.progress_bar.setStyleSheet("""QProgressBar::chunk{background-color: #2d7121;}""")
         else:
             self.progress_bar.setStyleSheet("""QProgressBar::chunk{background-color: #394359;}""")
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    app_icon = QIcon(".assets/WIcon.png")
-    app.setWindowIcon(app_icon)
-
-    with open(".assets/style.css", 'r') as file:
-        app.setStyleSheet(file.read())
-
-    main_window = TDQuicker()
-    main_window.show()
-
-    app.exec()
